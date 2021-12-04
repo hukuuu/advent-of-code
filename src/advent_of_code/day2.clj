@@ -1,4 +1,4 @@
-(ns advent-of-code.day2-dive
+(ns advent-of-code.day2
   (:gen-class)
   (:require [clojure.java.io :as io]
             [clojure.string :as str]))
