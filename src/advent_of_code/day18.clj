@@ -4,7 +4,6 @@
 
 (defn find-first [loc pred]
   (loop [l loc]
-    ;; (prn l)
     (cond
 
       (z/end? l)
@@ -17,12 +16,9 @@
       (recur (z/next l)))))
 
 (defn first-right [loc]
-  ;; (prn "search right")
   (if (nil? loc)
-    ;; root reached
     nil
     (let [right (z/right loc)]
-      ;; (prn loc right)
       (if (nil? right)
         (first-right (z/up loc))
         (find-first right (comp number? z/node))))))
@@ -34,38 +30,29 @@
      (not (number? (z/node loc))))))
 
 (defn find-last [loc pred]
-  ;; TODO - bug?
   (if (number? loc)
     loc
     (if (z/branch? loc)
-      (find-last (last (z/children loc)) pred)
+      (find-last (z/right (z/down loc)) pred)
       loc)))
 
 (defn first-left [loc]
-  ;; (prn "search left")
   (if (nil? loc)
-    ;; root reached
     nil
     (let [left (z/left loc)]
-      ;; (prn loc left)
       (if (nil? left)
         (first-left (z/up loc))
         (find-last left (comp number? z/node))))))
 
 (defn explode [n]
-  ;; (prn "explode" n)
   (let [root (z/vector-zip n)
         deep (find-first root nested-pair?)]
     (if (nil? deep)
       n
       (let [[[l r] deep] ((juxt z/children #(z/replace % 0)) deep)
-            ;; _ (prn "res" (z/root deep))
             left (first-left deep)
-            ;; _ (prn "left" (z/node left))
             deep (if (nil? left) deep (z/edit left + l))
-            ;; _ (prn "res" (z/root deep))
             right (first-right (if (nil? left) deep (first-right deep)))
-            ;; _ (prn "right" (z/root right))
             deep (if (nil? right) deep (z/edit right + r))]
         (z/root deep)))))
 
@@ -102,8 +89,15 @@
 
 (defn add [a b]
   (let [res (reduce-n [a b])]
-    (prn res)
     res))
+
+(defn magnitude [n]
+  (if (vector? n)
+    (+ (* 3 (magnitude (first n)))
+       (* 2 (magnitude (last n))))
+    n))
+
+(type [])
 
 (defn part-one [xs]
   (reduce add xs))
@@ -117,8 +111,9 @@
 
 (comment
     
-  (part-one (parse input))
+  (magnitude (part-one (parse input)))
   (reduce-n [[[[2,[3,5]],[8,7]],[[9,3],2]] [[3,[3,7]],[[3,6],[[1,1],7]]]])
+  (reduce-n [[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]])
 
   (let [n [[[[0,7],4],[15,[0,13]]],[1,1]]]
     (split (z/vector-zip n)))
