@@ -57,7 +57,7 @@
         (z/root deep)))))
 
 (explode [[[[0,7],4],[7,[[8,4],9]]],[1,1]])
- 
+
 
 (defn split? [loc]
   (let [node (z/node loc)]
@@ -97,36 +97,28 @@
        (* 2 (magnitude (last n))))
     n))
 
-(type [])
-
 (defn part-one [xs]
-  (reduce add xs))
+  (magnitude (reduce add xs)))
 
-(def input (slurp "resources/day18.txt"))
+(defn part-two [xs]
+  (let [combinations (remove
+                      nil?
+                      (for [i xs j xs]
+                        (if (= i j) nil [i j])))
+        all (concat combinations (mapv reverse combinations))]
+      (->> all
+        (map #(magnitude (add (first %) (last %))))
+        (sort)
+        (last))))
+
 
 (defn parse [input]
   (->> input
        (str/split-lines)
        (map read-string)))
 
+(def input (slurp "resources/day18.txt"))
+
 (comment
-    
-  (magnitude (part-one (parse input)))
-  (reduce-n [[[[2,[3,5]],[8,7]],[[9,3],2]] [[3,[3,7]],[[3,6],[[1,1],7]]]])
-  (reduce-n [[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]])
-
-  (let [n [[[[0,7],4],[15,[0,13]]],[1,1]]]
-    (split (z/vector-zip n)))
-
-  (reduce-n [[[[[9,8],1],2],3],4])
-  (reduce-n [[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]])
-
-  (explode [[[[0 7] 4] [7 [[8 4] 9]]] [1 1]])
-
-  (explode (explode [[[[[9,8],1],2],3],4]))
-  (z/vector-zip [[[[[9,8],1],2],3],4])
-
-  (explode [7,[6,[5,[4,[3,2]]]]])
-  (explode [[6,[5,[4,[3,2]]]],1])
-  (explode [[3,[2,[1,[7,3]]]],[6,[5,[4,[3,2]]]]])
-  (explode [[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]))
+  (part-one (parse input))
+  (part-two (parse input)))
